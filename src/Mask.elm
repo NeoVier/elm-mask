@@ -270,7 +270,7 @@ updateFloatString decimalDigits ({ decimalSeparator } as separators) { previousV
         multiplyBy10 value =
             case String.split "." value of
                 [ beforeSeparator ] ->
-                    if String.length beforeSeparator == 1 then
+                    if String.length beforeSeparator == 1 && decimalDigitsAmount > 0 then
                         "0." ++ String.repeat (decimalDigitsAmount - 1) "0" ++ beforeSeparator
 
                     else
