@@ -319,28 +319,25 @@ updateFloatString decimalDigits ({ decimalSeparator } as separators) { previousV
 
         handleDeletingSeparator : String -> String
         handleDeletingSeparator value =
-            if String.contains "." previousValue && not (String.contains "." newValue) then
-                case String.split decimalSeparator value of
-                    [ beforeSeparator, afterSeparator ] ->
-                        if String.endsWith (String.repeat decimalDigitsAmount "0") beforeSeparator then
-                            String.dropRight decimalDigitsAmount beforeSeparator ++ decimalSeparator ++ afterSeparator
+            let
+                hasDeletedSeparator =
+                    String.contains decimalSeparator previousValue && not (String.contains decimalSeparator value)
 
-                        else
-                            beforeSeparator ++ decimalSeparator ++ afterSeparator
-
-                    _ ->
-                        -- IMPOSSIBLE CASE
-                        value
+                separatorWasOnlyDeletion =
+                    String.replace decimalSeparator "" previousValue == value
+            in
+            if hasDeletedSeparator && separatorWasOnlyDeletion then
+                previousValue
 
             else
                 value
     in
     newValue
+        |> handleDeletingSeparator
         |> removeFloat separators
         |> multiplyBy10
         |> removeZeroes
         |> floatString decimalDigits separators
-        |> Maybe.map handleDeletingSeparator
         |> Maybe.withDefault previousValue
 
 
