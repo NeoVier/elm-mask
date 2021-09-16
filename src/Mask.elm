@@ -349,7 +349,26 @@ string (without the decimal digits)
 -}
 addThousandsSeparator : String -> String -> String
 addThousandsSeparator separator value =
+    let
+        isNegative =
+            String.left 1 value == "-"
+
+        withoutSign v =
+            if isNegative then
+                String.dropLeft 1 v
+
+            else
+                v
+
+        addSign v =
+            if isNegative then
+                "-" ++ v
+
+            else
+                v
+    in
     value
+        |> withoutSign
         |> String.foldr
             (\currentChar { currentCount, currentGroups, currentGroup } ->
                 if currentCount == 2 then
@@ -368,6 +387,7 @@ addThousandsSeparator separator value =
         |> (\{ currentGroups, currentGroup } -> currentGroup :: currentGroups)
         |> List.filter (not << String.isEmpty)
         |> String.join separator
+        |> addSign
 
 
 {-| Add the necessary trailing `0`s to a float
